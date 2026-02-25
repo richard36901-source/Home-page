@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b0f17" />
+  <title>Quick Copy</title>
+
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --panel:#111a2b;
+      --card:#0f1626;
+      --text:#eaf0ff;
+      --muted:#9aaad0;
+      --border:rgba(255,255,255,.10);
+      --shadow:0 10px 30px rgba(0,0,0,.45);
+      --btn:#1c2a46;
+      --btn2:#16223a;
+      --ok:#16c784;
+      --warn:#ffb020;
+      --danger:#ff5c7a;
+      --radius:16px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background: radial-gradient(1000px 700px at 20% 0%, rgba(106,166,255,.20), transparent 55%),
+                  radial-gradient(900px 600px at 80% 10%, rgba(124,255,166,.14), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      padding:18px;
+    }
+
+    .wrap{max-width:860px;margin:0 auto}
+    header{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; margin-bottom:14px;
+    }
+    h1{
+      font-size:18px; margin:0; letter-spacing:.2px;
+    }
+    .sub{
+      margin:6px 0 0 0; color:var(--muted); font-size:13px; line-height:1.35;
+    }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      background: rgba(17,26,43,.7);
+      border:1px solid var(--border);
+      border-radius:999px;
+      box-shadow: var(--shadow);
+      cursor:pointer;
+      user-select:none;
+      font-size:13px;
+      color:var(--text);
+    }
+    .pill:active{transform:scale(.98)}
+
+    .searchRow{
+      margin: 10px 0 16px 0;
+      display:flex; gap:10px; align-items:center;
+    }
+    .search{
+      flex:1;
+      background: rgba(17,26,43,.7);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding:12px 14px;
+      color:var(--text);
+      outline:none;
+      font-size:14px;
+    }
+    .search::placeholder{color:rgba(154,170,208,.75)}
+    .smallBtn{
+      min-width:86px;
+      background: rgba(17,26,43,.7);
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:12px 14px;
+      color:var(--text);
+      cursor:pointer;
+      font-size:13px;
+    }
+    .smallBtn:active{transform:scale(.98)}
+
+    details{
+      background: rgba(17,26,43,.55);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      margin-bottom:12px;
+    }
+    summary{
+      list-style:none;
+      cursor:pointer;
+      padding:14px 14px;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+    }
+    summary::-webkit-details-marker{display:none}
+    .sumLeft{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .title{
+      font-size:15px; font-weight:700;
+    }
+    .desc{
+      font-size:12.5px; color:var(--muted);
+    }
+    .chev{
+      width:34px; height:34px; border-radius:12px;
+      display:grid; place-items:center;
+      background: rgba(15,22,38,.6);
+      border:1px solid var(--border);
+      flex:0 0 auto;
+    }
+    details[open] .chev{transform:rotate(180deg)}
+
+    .content{
+      padding: 0 14px 14px 14px;
+      display:grid;
+      gap:10px;
+    }
+
+    .item{
+      background: rgba(15,22,38,.72);
+      border:1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .rowTop{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    }
+    .label{
+      font-weight:700; font-size:14px;
+    }
+    .meta{
+      font-size:12px; color:var(--muted); margin-top:3px;
+    }
+
+    .actions{
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    button.btn, a.btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background: var(--btn);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-size:13px;
+      text-decoration:none;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    button.btn.secondary, a.btn.secondary{background: var(--btn2)}
+    button.btn:active, a.btn:active{transform:scale(.98)}
+    .btnIcon{opacity:.9}
+
+    .box{
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding:10px 10px;
+      font-size:13px;
+      color: rgba(234,240,255,.95);
+      white-space:pre-wrap;
+      word-break:break-word;
+      line-height:1.35;
+      user-select:text;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(15,22,38,.92);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 13px;
+      box-shadow: var(--shadow);
+      display:none;
+      gap:10px;
+      align-items:center;
+      z-index:9999;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background: var(--ok);
+      box-shadow: 0 0 0 4px rgba(22,199,132,.18);
+    }
+
+    .hidden{display:none !important}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Quick Copy</h1>
+        <p class="sub">Tap a section. Copy text or open links. Edit items at bottom of the file.</p>
+      </div>
+      <div class="pill" id="expandAllBtn" title="Expand or collapse all">
+        <span>Expand all</span>
+      </div>
+    </header>
+
+    <div class="searchRow">
+      <input id="search" class="search" placeholder="Search titles or content..." />
+      <button class="smallBtn" id="clearSearch">Clear</button>
+    </div>
+
+    <div id="sections"></div>
+
+    <div class="toast" id="toast">
+      <span class="dot"></span>
+      <span id="toastText">Copied</span>
+    </div>
+  </div>
+
+<script>
+  // ============
+  // DATA: edit this only
+  // type: "text" -> shows text + copy button
+  // type: "link" -> shows url + open/copy buttons
+  // ============
+  const data = [
+    {
+      id: "sec1",
+      title: "WhatsApp Messages",
+      description: "Quick messages to copy",
+      items: [
+        {
+          type: "text",
+          label: "Intro reply",
+          note: "First response",
+          value: "Hey 👋\nThanks for reaching out.\n\nThe fastest way is to call me:\n054-0000000\n\nOr leave details here and I’ll get back within 24h:\nhttps://your-form-link"
+        },
+        {
+          type: "text",
+          label: "Payment reminder",
+          note: "Short and firm",
+          value: "Hey, just a reminder the work is complete.\nPlease complete the payment so I can issue the invoice. תודה 🙏"
+        }
+      ]
+    },
+    {
+      id: "sec2",
+      title: "Links",
+      description: "Portfolio, payment, calendars",
+      items: [
+        {
+          type: "link",
+          label: "Portfolio",
+          note: "GitHub page",
+          url: "https://YOUR-USERNAME.github.io/portfolio/"
+        },
+        {
+          type: "link",
+          label: "Payment link",
+          note: "Replace with your payment URL",
+          url: "https://your-payment-link"
+        },
+        {
+          type: "link",
+          label: "Calendly",
+          note: "Booking link",
+          url: "https://calendly.com/yourname"
+        }
+      ]
+    },
+    {
+      id: "sec3",
+      title: "Business Details",
+      description: "Email, details, copyable info",
+      items: [
+        {
+          type: "text",
+          label: "My email",
+          note: "Copy email only",
+          value: "youremail@domain.com"
+        },
+        {
+          type: "text",
+          label: "Invoice details request",
+          note: "To create invoice",
+          value: "Please send:\n1) Full name / business name\n2) ID / company number\n3) Address\n4) Email for invoice\nThanks"
+        }
+      ]
+    }
+  ];
+
+  // ============
+  // RENDER
+  // ============
+  const elSections = document.getElementById("sections");
+
+  function icon(name){
+    // Tiny inline icons (no external libs)
+    const icons = {
+      chev: "▾",
+      copy: "⧉",
+      open: "↗",
+      link: "🔗",
+      msg: "💬"
+    };
+    return icons[name] || "•";
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function render(){
+    elSections.innerHTML = "";
+
+    data.forEach(section => {
+      const details = document.createElement("details");
+      details.dataset.sectionId = section.id;
+
+      const summary = document.createElement("summary");
+
+      const left = document.createElement("div");
+      left.className = "sumLeft";
+      left.innerHTML = `
+        <div class="title">${escapeHtml(section.title)}</div>
+        <div class="desc">${escapeHtml(section.description || "")}</div>
+      `;
+
+      const chev = document.createElement("div");
+      chev.className = "chev";
+      chev.textContent = icon("chev");
+
+      summary.appendChild(left);
+      summary.appendChild(chev);
+
+      const content = document.createElement("div");
+      content.className = "content";
+
+      section.items.forEach((item, idx) => {
+        const card = document.createElement("div");
+        card.className = "item";
+        card.dataset.search = (item.label + " " + (item.note||"") + " " + (item.value||"") + " " + (item.url||"")).toLowerCase();
+
+        const top = document.createElement("div");
+        top.className = "rowTop";
+        top.innerHTML = `
+          <div>
+            <div class="label">${escapeHtml(item.label || "Item")}</div>
+            ${item.note ? `<div class="meta">${escapeHtml(item.note)}</div>` : ""}
+          </div>
+        `;
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        if(item.type === "link"){
+          const openBtn = document.createElement("a");
+          openBtn.className = "btn";
+          openBtn.href = item.url;
+          openBtn.target = "_blank";
+          openBtn.rel = "noopener";
+          openBtn.innerHTML = `<span class="btnIcon">${icon("open")}</span><span>Open</span>`;
+
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "btn secondary";
+          copyBtn.type = "button";
+          copyBtn.innerHTML = `<span class="btnIcon">${icon("copy")}</span><span>Copy link</span>`;
+          copyBtn.addEventListener("click", () => copyToClipboard(item.url));
+
+          actions.appendChild(openBtn);
+          actions.appendChild(copyBtn);
+
+          const box = document.createElement("div");
+          box.className = "box";
+          box.textContent = item.url;
+
+          card.appendChild(top);
+          card.appendChild(actions);
+          card.appendChild(box);
+        } else {
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "btn";
+          copyBtn.type = "button";
+          copyBtn.innerHTML = `<span class="btnIcon">${icon("copy")}</span><span>Copy</span>`;
+          copyBtn.addEventListener("click", () => copyToClipboard(item.value || ""));
+
+          actions.appendChild(copyBtn);
+
+          const box = document.createElement("div");
+          box.className = "box";
+          box.textContent = item.value || "";
+
+          card.appendChild(top);
+          card.appendChild(actions);
+          card.appendChild(box);
+        }
+
+        content.appendChild(card);
+      });
+
+      details.appendChild(summary);
+      details.appendChild(content);
+      elSections.appendChild(details);
+    });
+  }
+
+  // ============
+  // COPY + TOAST
+  // ============
+  const toast = document.getElementById("toast");
+  const toastText = document.getElementById("toastText");
+  let toastTimer = null;
+
+  async function copyToClipboard(text){
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast("Copied");
+    }catch(e){
+      // Fallback for older browsers / permissions
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      showToast("Copied");
+    }
+  }
+
+  function showToast(msg){
+    toastText.textContent = msg;
+    toast.style.display = "inline-flex";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.style.display = "none";
+    }, 1200);
+  }
+
+  // ============
+  // EXPAND ALL
+  // ============
+  const expandAllBtn = document.getElementById("expandAllBtn");
+  let expanded = false;
+
+  function setAll(open){
+    document.querySelectorAll("details").forEach(d => d.open = open);
+    expanded = open;
+    expandAllBtn.querySelector("span").textContent = open ? "Collapse all" : "Expand all";
+  }
+
+  expandAllBtn.addEventListener("click", () => setAll(!expanded));
+
+  // ============
+  // SEARCH FILTER
+  // ============
+  const search = document.getElementById("search");
+  const clearSearch = document.getElementById("clearSearch");
+
+  function applySearch(){
+    const q = search.value.trim().toLowerCase();
+
+    document.querySelectorAll("details").forEach(sectionEl => {
+      let anyVisible = false;
+      sectionEl.querySelectorAll(".item").forEach(itemEl => {
+        const hit = !q || itemEl.dataset.search.includes(q);
+        itemEl.classList.toggle("hidden", !hit);
+        if(hit) anyVisible = true;
+      });
+      sectionEl.classList.toggle("hidden", !anyVisible);
+      if(q && anyVisible) sectionEl.open = true;
+    });
+  }
+
+  search.addEventListener("input", applySearch);
+  clearSearch.addEventListener("click", () => {
+    search.value = "";
+    applySearch();
+  });
+
+  // init
+  render();
+  setAll(false);
+</script>
+</body>
+</html>
