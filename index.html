@@ -1,506 +1,575 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#0b0f17" />
-  <title>Quick Copy</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#060d1a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>AutoScale — Quick Copy</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
   <style>
-    :root{
-      --bg:#0b0f17;
-      --panel:#111a2b;
-      --card:#0f1626;
-      --text:#eaf0ff;
-      --muted:#9aaad0;
-      --border:rgba(255,255,255,.10);
-      --shadow:0 10px 30px rgba(0,0,0,.45);
-      --btn:#1c2a46;
-      --btn2:#16223a;
-      --ok:#16c784;
-      --warn:#ffb020;
-      --danger:#ff5c7a;
-      --radius:16px;
+    :root {
+      --bg: #060d1a;
+      --surface: rgba(8,18,38,0.72);
+      --glass: rgba(12,26,56,0.55);
+      --border: rgba(80,140,255,0.13);
+      --border-hover: rgba(80,160,255,0.32);
+      --text: #e8f0ff;
+      --muted: #6a85b6;
+      --accent: #3a8ef6;
+      --accent2: #1dffd4;
+      --accent-glow: rgba(58,142,246,0.22);
+      --radius: 18px;
+      --radius-sm: 12px;
     }
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background: radial-gradient(1000px 700px at 20% 0%, rgba(106,166,255,.20), transparent 55%),
-                  radial-gradient(900px 600px at 80% 10%, rgba(124,255,166,.14), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-      padding:18px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .wrap{max-width:860px;margin:0 auto}
-    header{
-      display:flex; align-items:flex-start; justify-content:space-between;
-      gap:12px; margin-bottom:14px;
-    }
-    h1{
-      font-size:18px; margin:0; letter-spacing:.2px;
-    }
-    .sub{
-      margin:6px 0 0 0; color:var(--muted); font-size:13px; line-height:1.35;
-    }
-
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 12px;
-      background: rgba(17,26,43,.7);
-      border:1px solid var(--border);
-      border-radius:999px;
-      box-shadow: var(--shadow);
-      cursor:pointer;
-      user-select:none;
-      font-size:13px;
-      color:var(--text);
-    }
-    .pill:active{transform:scale(.98)}
-
-    .searchRow{
-      margin: 10px 0 16px 0;
-      display:flex; gap:10px; align-items:center;
-    }
-    .search{
-      flex:1;
-      background: rgba(17,26,43,.7);
-      border:1px solid var(--border);
-      border-radius: 999px;
-      padding:12px 14px;
-      color:var(--text);
-      outline:none;
-      font-size:14px;
-    }
-    .search::placeholder{color:rgba(154,170,208,.75)}
-    .smallBtn{
-      min-width:86px;
-      background: rgba(17,26,43,.7);
-      border:1px solid var(--border);
-      border-radius:999px;
-      padding:12px 14px;
-      color:var(--text);
-      cursor:pointer;
-      font-size:13px;
-    }
-    .smallBtn:active{transform:scale(.98)}
-
-    details{
-      background: rgba(17,26,43,.55);
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      margin-bottom:12px;
-    }
-    summary{
-      list-style:none;
-      cursor:pointer;
-      padding:14px 14px;
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px;
-    }
-    summary::-webkit-details-marker{display:none}
-    .sumLeft{
-      display:flex; flex-direction:column; gap:4px;
-    }
-    .title{
-      font-size:15px; font-weight:700;
-    }
-    .desc{
-      font-size:12.5px; color:var(--muted);
-    }
-    .chev{
-      width:34px; height:34px; border-radius:12px;
-      display:grid; place-items:center;
-      background: rgba(15,22,38,.6);
-      border:1px solid var(--border);
-      flex:0 0 auto;
-    }
-    details[open] .chev{transform:rotate(180deg)}
-
-    .content{
-      padding: 0 14px 14px 14px;
-      display:grid;
-      gap:10px;
-    }
-
-    .item{
-      background: rgba(15,22,38,.72);
-      border:1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .rowTop{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
-    }
-    .label{
-      font-weight:700; font-size:14px;
-    }
-    .meta{
-      font-size:12px; color:var(--muted); margin-top:3px;
-    }
-
-    .actions{
-      display:flex; gap:8px; flex-wrap:wrap;
-    }
-    button.btn, a.btn{
-      appearance:none;
-      border:1px solid var(--border);
-      background: var(--btn);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius: 12px;
-      cursor:pointer;
-      font-size:13px;
-      text-decoration:none;
-      display:inline-flex; align-items:center; gap:8px;
-    }
-    button.btn.secondary, a.btn.secondary{background: var(--btn2)}
-    button.btn:active, a.btn:active{transform:scale(.98)}
-    .btnIcon{opacity:.9}
-
-    .box{
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius: 12px;
-      padding:10px 10px;
-      font-size:13px;
-      color: rgba(234,240,255,.95);
-      white-space:pre-wrap;
-      word-break:break-word;
-      line-height:1.35;
-      user-select:text;
-    }
-
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      background: rgba(15,22,38,.92);
-      border:1px solid var(--border);
-      border-radius: 999px;
-      padding: 10px 14px;
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
       color: var(--text);
-      font-size: 13px;
-      box-shadow: var(--shadow);
-      display:none;
-      gap:10px;
-      align-items:center;
-      z-index:9999;
-    }
-    .dot{
-      width:10px;height:10px;border-radius:50%;
-      background: var(--ok);
-      box-shadow: 0 0 0 4px rgba(22,199,132,.18);
+      min-height: 100dvh;
+      padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+      overflow-x: hidden;
     }
 
-    .hidden{display:none !important}
+    /* ── Background atmosphere ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80vw 55vh at 10% -5%, rgba(30,90,220,0.22) 0%, transparent 65%),
+        radial-gradient(ellipse 60vw 40vh at 90% 10%, rgba(0,200,180,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 100vw 30vh at 50% 100%, rgba(10,30,80,0.5) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* subtle grid */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(58,142,246,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(58,142,246,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 28px 16px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #0d2a6e, #0a4a3a);
+      border: 1px solid rgba(58,142,246,0.28);
+      box-shadow: 0 0 28px rgba(58,142,246,0.28), 0 0 0 4px rgba(58,142,246,0.07);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .logo-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .logo-fallback {
+      font-family: 'Space Mono', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -1px;
+    }
+
+    .brand-name {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      background: linear-gradient(90deg, #c8deff, #1dffd4 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .brand-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      font-family: 'Space Mono', monospace;
+      margin-top: -4px;
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      margin: 28px 0 12px;
+      opacity: 0.8;
+    }
+
+    /* ── Link Card ── */
+    .link-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 9px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      cursor: default;
+    }
+
+    .link-card:active {
+      transform: scale(0.985);
+    }
+
+    @media (hover: hover) {
+      .link-card:hover {
+        border-color: var(--border-hover);
+        box-shadow: 0 0 0 1px rgba(58,142,246,0.08), 0 8px 28px rgba(0,0,0,0.3);
+      }
+    }
+
+    .card-left {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-url {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      direction: ltr;
+      text-align: right;
+    }
+
+    /* ── Buttons ── */
+    .card-actions {
+      display: flex;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+
+    .btn-copy, .btn-open {
+      appearance: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'Sora', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 9px 13px;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-copy {
+      background: rgba(58,142,246,0.13);
+      color: #8bbfff;
+      border-color: rgba(58,142,246,0.22);
+    }
+
+    .btn-copy:active,
+    .btn-copy.copied {
+      background: rgba(29,255,212,0.12);
+      color: var(--accent2);
+      border-color: rgba(29,255,212,0.3);
+      transform: scale(0.95);
+    }
+
+    .btn-open {
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      border-color: var(--border);
+      text-decoration: none;
+    }
+
+    .btn-open:active {
+      background: rgba(255,255,255,0.08);
+      transform: scale(0.95);
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: rgba(8,20,50,0.92);
+      border: 1px solid rgba(29,255,212,0.25);
+      border-radius: 999px;
+      padding: 11px 18px;
+      font-size: 13px;
+      color: var(--accent2);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 0 24px rgba(29,255,212,0.12);
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent2);
+      box-shadow: 0 0 8px var(--accent2);
+    }
+
+    /* ── Contact card (Donna) ── */
+    .contact-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 9px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .contact-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1a3a6e, #0a4a3a);
+      border: 1.5px solid rgba(58,142,246,0.3);
+      box-shadow: 0 0 14px rgba(58,142,246,0.2);
+      overflow: hidden;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    .contact-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .contact-avatar .avatar-fallback {
+      font-size: 17px;
+      color: rgba(200,220,255,0.6);
+    }
+
+    .contact-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .contact-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .contact-role {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .btn-wa {
+      appearance: none;
+      border: 1px solid rgba(37,211,102,0.25);
+      border-radius: var(--radius-sm);
+      font-family: 'Sora', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 9px 13px;
+      background: rgba(37,211,102,0.10);
+      color: #4ddb7a;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-wa:active {
+      background: rgba(37,211,102,0.18);
+      transform: scale(0.95);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0 4px;
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
+
     <header>
-      <div>
-        <h1>Quick Copy</h1>
-        <p class="sub">Tap a section. Copy text or open links. Edit items at bottom of the file.</p>
+      <div class="logo-mark">
+        <img src="logo.jpg" alt="AutoScale Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+        <span class="logo-fallback" style="display:none">AS</span>
       </div>
-      <div class="pill" id="expandAllBtn" title="Expand or collapse all">
-        <span>Expand all</span>
-      </div>
+      <div class="brand-name">AutoScale</div>
+      <div class="brand-sub">אוטומציות חכמות</div>
     </header>
 
-    <div class="searchRow">
-      <input id="search" class="search" placeholder="Search titles or content..." />
-      <button class="smallBtn" id="clearSearch">Clear</button>
-    </div>
+    <div id="root"></div>
 
-    <div id="sections"></div>
+  </div>
 
-    <div class="toast" id="toast">
-      <span class="dot"></span>
-      <span id="toastText">Copied</span>
-    </div>
+  <div class="toast" id="toast">
+    <span class="toast-dot"></span>
+    <span id="toastMsg">הועתק ✓</span>
   </div>
 
 <script>
-  // ============
-  // DATA: edit this only
-  // type: "text" -> shows text + copy button
-  // type: "link" -> shows url + open/copy buttons
-  // ============
-  const data = [
+  // ─────────────────────────────────────────────
+  // DATA — edit only this section
+  // ─────────────────────────────────────────────
+  const sections = [
     {
-      id: "sec1",
-      title: "WhatsApp Messages",
-      description: "Quick messages to copy",
+      label: "",
       items: [
-        {
-          type: "text",
-          label: "Intro reply",
-          note: "First response",
-          value: "Hey 👋\nThanks for reaching out.\n\nThe fastest way is to call me:\n054-0000000\n\nOr leave details here and I’ll get back within 24h:\nhttps://your-form-link"
-        },
-        {
-          type: "text",
-          label: "Payment reminder",
-          note: "Short and firm",
-          value: "Hey, just a reminder the work is complete.\nPlease complete the payment so I can issue the invoice. תודה 🙏"
-        }
-      ]
-    },
-    {
-      id: "sec2",
-      title: "Links",
-      description: "Portfolio, payment, calendars",
-      items: [
-        {
-          type: "link",
-          label: "Portfolio",
-          note: "GitHub page",
-          url: "https://YOUR-USERNAME.github.io/portfolio/"
-        },
-        {
-          type: "link",
-          label: "Payment link",
-          note: "Replace with your payment URL",
-          url: "https://your-payment-link"
-        },
-        {
-          type: "link",
-          label: "Calendly",
-          note: "Booking link",
-          url: "https://calendly.com/yourname"
-        }
-      ]
-    },
-    {
-      id: "sec3",
-      title: "Business Details",
-      description: "Email, details, copyable info",
-      items: [
-        {
-          type: "text",
-          label: "My email",
-          note: "Copy email only",
-          value: "youremail@domain.com"
-        },
-        {
-          type: "text",
-          label: "Invoice details request",
-          note: "To create invoice",
-          value: "Please send:\n1) Full name / business name\n2) ID / company number\n3) Address\n4) Email for invoice\nThanks"
-        }
+        { type: "contact", name: "דונה", role: "מזכירות", phone: "972552962965", avatar: "donna.jpg" },
+        { divider: true },
+        { name: "תיק עבודות",          url: "https://richard36901-source.github.io/portfolio/" },
+        { name: "תיאום פגישה",         url: "https://cal.com/richard-tomskiy/schedule" },
+        { name: "לתיאום שיחה",         url: "https://cal.com/richard-tomskiy/phone-call" },
+        { divider: true },
+        { name: "פרטי תשלום",          url: "https://richard36901-source.github.io/autoscale-pay/" },
+        { name: "תשלום באשראי",        url: "https://pay.grow.link/b62f5369942b5598987e88bb6170fa75-MzE2MTAzNg" },
+        { divider: true },
+        { name: "טופס רכישת בנק שעות", url: "https://forms.monday.com/forms/ae4d28bdd69b45e8d3ab6dc303a66a41?r=use1" },
+        { name: "טופס בקשות",          url: "https://forms.monday.com/forms/3e79048367436b78a1e9bbbfdadb7098?r=use1" },
+        { name: "טופס להעברת גישות",   url: "https://forms.monday.com/forms/cecc3e978ab695990753b0053e8bb696?r=use1" },
+        { divider: true },
+        { name: "תנאי שימוש בנק שעות", url: "https://richard36901-source.github.io/Hours-bank/" },
+        { name: "זמני מענה",           url: "https://your-link/response-times" },
       ]
     }
   ];
+  // ─────────────────────────────────────────────
 
-  // ============
-  // RENDER
-  // ============
-  const elSections = document.getElementById("sections");
+  const root = document.getElementById("root");
+  const toast = document.getElementById("toast");
+  const toastMsg = document.getElementById("toastMsg");
+  let toastTimer;
 
-  function icon(name){
-    // Tiny inline icons (no external libs)
-    const icons = {
-      chev: "▾",
-      copy: "⧉",
-      open: "↗",
-      link: "🔗",
-      msg: "💬"
-    };
-    return icons[name] || "•";
+  function showToast(msg) {
+    toastMsg.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 1400);
   }
 
-  function escapeHtml(str){
-    return String(str)
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
+  async function copy(url, btn) {
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = url; ta.style.position = "fixed"; ta.style.left = "-9999px";
+      document.body.appendChild(ta); ta.select(); document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    btn.classList.add("copied");
+    btn.textContent = "✓";
+    showToast("הועתק ✓");
+    setTimeout(() => { btn.classList.remove("copied"); btn.innerHTML = copyIcon() + " העתק"; }, 1400);
   }
 
-  function render(){
-    elSections.innerHTML = "";
+  function copyIcon() {
+    return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+  }
 
-    data.forEach(section => {
-      const details = document.createElement("details");
-      details.dataset.sectionId = section.id;
+  function openIcon() {
+    return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+  }
 
-      const summary = document.createElement("summary");
+  function render() {
+    sections.forEach((sec, si) => {
+      if (si > 0) {
+        const div = document.createElement("div");
+        div.className = "divider";
+        root.appendChild(div);
+      }
 
-      const left = document.createElement("div");
-      left.className = "sumLeft";
-      left.innerHTML = `
-        <div class="title">${escapeHtml(section.title)}</div>
-        <div class="desc">${escapeHtml(section.description || "")}</div>
-      `;
+      const label = document.createElement("div");
+      label.className = "section-label";
+      label.textContent = sec.label;
+      root.appendChild(label);
 
-      const chev = document.createElement("div");
-      chev.className = "chev";
-      chev.textContent = icon("chev");
-
-      summary.appendChild(left);
-      summary.appendChild(chev);
-
-      const content = document.createElement("div");
-      content.className = "content";
-
-      section.items.forEach((item, idx) => {
-        const card = document.createElement("div");
-        card.className = "item";
-        card.dataset.search = (item.label + " " + (item.note||"") + " " + (item.value||"") + " " + (item.url||"")).toLowerCase();
-
-        const top = document.createElement("div");
-        top.className = "rowTop";
-        top.innerHTML = `
-          <div>
-            <div class="label">${escapeHtml(item.label || "Item")}</div>
-            ${item.note ? `<div class="meta">${escapeHtml(item.note)}</div>` : ""}
-          </div>
-        `;
-
-        const actions = document.createElement("div");
-        actions.className = "actions";
-
-        if(item.type === "link"){
-          const openBtn = document.createElement("a");
-          openBtn.className = "btn";
-          openBtn.href = item.url;
-          openBtn.target = "_blank";
-          openBtn.rel = "noopener";
-          openBtn.innerHTML = `<span class="btnIcon">${icon("open")}</span><span>Open</span>`;
-
-          const copyBtn = document.createElement("button");
-          copyBtn.className = "btn secondary";
-          copyBtn.type = "button";
-          copyBtn.innerHTML = `<span class="btnIcon">${icon("copy")}</span><span>Copy link</span>`;
-          copyBtn.addEventListener("click", () => copyToClipboard(item.url));
-
-          actions.appendChild(openBtn);
-          actions.appendChild(copyBtn);
-
-          const box = document.createElement("div");
-          box.className = "box";
-          box.textContent = item.url;
-
-          card.appendChild(top);
-          card.appendChild(actions);
-          card.appendChild(box);
-        } else {
-          const copyBtn = document.createElement("button");
-          copyBtn.className = "btn";
-          copyBtn.type = "button";
-          copyBtn.innerHTML = `<span class="btnIcon">${icon("copy")}</span><span>Copy</span>`;
-          copyBtn.addEventListener("click", () => copyToClipboard(item.value || ""));
-
-          actions.appendChild(copyBtn);
-
-          const box = document.createElement("div");
-          box.className = "box";
-          box.textContent = item.value || "";
-
-          card.appendChild(top);
-          card.appendChild(actions);
-          card.appendChild(box);
+      sec.items.forEach(item => {
+        // inline section divider
+        if (item.divider) {
+          const div = document.createElement("div");
+          div.className = "divider";
+          div.style.margin = "14px 0";
+          root.appendChild(div);
+          return;
         }
 
-        content.appendChild(card);
-      });
+        // contact card (Donna etc.)
+        if (item.type === "contact") {
+          const card = document.createElement("div");
+          card.className = "contact-card";
 
-      details.appendChild(summary);
-      details.appendChild(content);
-      elSections.appendChild(details);
+          const avatar = document.createElement("div");
+          avatar.className = "contact-avatar";
+          avatar.innerHTML = `
+            <img src="${item.avatar}" alt="${item.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+            <span class="avatar-fallback" style="display:none">👤</span>
+          `;
+
+          const info = document.createElement("div");
+          info.className = "contact-info";
+          info.innerHTML = `
+            <div class="contact-name">${item.name}</div>
+            <div class="contact-role">${item.role}</div>
+          `;
+
+          const actions = document.createElement("div");
+          actions.className = "card-actions";
+
+          const waBtn = document.createElement("a");
+          waBtn.className = "btn-wa";
+          waBtn.href = `https://wa.me/${item.phone}`;
+          waBtn.target = "_blank";
+          waBtn.rel = "noopener";
+          waBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp`;
+
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "btn-copy";
+          copyBtn.type = "button";
+          copyBtn.innerHTML = copyIcon() + " העתק";
+          copyBtn.addEventListener("click", () => copy("+" + item.phone, copyBtn));
+
+          actions.appendChild(waBtn);
+          actions.appendChild(copyBtn);
+
+          card.appendChild(avatar);
+          card.appendChild(info);
+          card.appendChild(actions);
+          root.appendChild(card);
+          return;
+        }
+
+        const card = document.createElement("div");
+        card.className = "link-card";
+
+        const left = document.createElement("div");
+        left.className = "card-left";
+
+        const name = document.createElement("div");
+        name.className = "card-name";
+        name.textContent = item.name;
+
+        const urlEl = document.createElement("div");
+        urlEl.className = "card-url";
+        urlEl.textContent = item.url;
+
+        left.appendChild(name);
+        left.appendChild(urlEl);
+
+        const actions = document.createElement("div");
+        actions.className = "card-actions";
+
+        const openBtn = document.createElement("a");
+        openBtn.className = "btn-open";
+        openBtn.href = item.url;
+        openBtn.target = "_blank";
+        openBtn.rel = "noopener";
+        openBtn.innerHTML = openIcon() + " פתח";
+
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "btn-copy";
+        copyBtn.type = "button";
+        copyBtn.innerHTML = copyIcon() + " העתק";
+        copyBtn.addEventListener("click", () => copy(item.url, copyBtn));
+
+        actions.appendChild(openBtn);
+        actions.appendChild(copyBtn);
+
+        card.appendChild(left);
+        card.appendChild(actions);
+        root.appendChild(card);
+      });
     });
   }
 
-  // ============
-  // COPY + TOAST
-  // ============
-  const toast = document.getElementById("toast");
-  const toastText = document.getElementById("toastText");
-  let toastTimer = null;
-
-  async function copyToClipboard(text){
-    try{
-      await navigator.clipboard.writeText(text);
-      showToast("Copied");
-    }catch(e){
-      // Fallback for older browsers / permissions
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      showToast("Copied");
-    }
-  }
-
-  function showToast(msg){
-    toastText.textContent = msg;
-    toast.style.display = "inline-flex";
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toast.style.display = "none";
-    }, 1200);
-  }
-
-  // ============
-  // EXPAND ALL
-  // ============
-  const expandAllBtn = document.getElementById("expandAllBtn");
-  let expanded = false;
-
-  function setAll(open){
-    document.querySelectorAll("details").forEach(d => d.open = open);
-    expanded = open;
-    expandAllBtn.querySelector("span").textContent = open ? "Collapse all" : "Expand all";
-  }
-
-  expandAllBtn.addEventListener("click", () => setAll(!expanded));
-
-  // ============
-  // SEARCH FILTER
-  // ============
-  const search = document.getElementById("search");
-  const clearSearch = document.getElementById("clearSearch");
-
-  function applySearch(){
-    const q = search.value.trim().toLowerCase();
-
-    document.querySelectorAll("details").forEach(sectionEl => {
-      let anyVisible = false;
-      sectionEl.querySelectorAll(".item").forEach(itemEl => {
-        const hit = !q || itemEl.dataset.search.includes(q);
-        itemEl.classList.toggle("hidden", !hit);
-        if(hit) anyVisible = true;
-      });
-      sectionEl.classList.toggle("hidden", !anyVisible);
-      if(q && anyVisible) sectionEl.open = true;
-    });
-  }
-
-  search.addEventListener("input", applySearch);
-  clearSearch.addEventListener("click", () => {
-    search.value = "";
-    applySearch();
-  });
-
-  // init
   render();
-  setAll(false);
 </script>
 </body>
 </html>
